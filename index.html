@@ -3,37 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Xóc Đĩa</title>
+    <title>Tuannnnnnnnn</title>
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
-        body {
-             text-align: center; 
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            background-color: whitesmoke;
+body {
+    text-align: center;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    background-color: whitesmoke;
+    background-image: url(chieucoi.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    width: 100%;
+}
 
+        .game-container {
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
-        .game-container { margin-top: 20px; }
+        .buttons {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .buttons button {
+            flex: 1;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            transition: background 0.3s;
+        }
+        .buttons button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .buttons button:hover:not(:disabled) {
+            background: #0056b3;
+        }
         .plate {
-            width: 200px; height: 200px;
+            width: 200px;
+            height: 200px;
             background: url('plate.png') no-repeat center/cover;
-            position: relative; display: inline-block;
+            position: relative;
+            margin: 20px auto;
         }
         .bowl {
-            width: 220px; height: 220px;
+            width: 220px;
+            height: 220px;
             background: url('bowl.png') no-repeat center/cover;
-            position: absolute; top: -10px; left: -10px;
+            position: absolute;
+            top: -10px;
+            left: -10px;
             transition: transform 0.5s ease-in-out, opacity 0.5s;
             opacity: 1;
             z-index: 2;
         }
         .coins {
-            position: absolute; width: 100%; height: 100%;
-            display: flex; justify-content: center; align-items: center;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
             z-index: 1;
         }
         .coin {
-            width: 40px; height: 40px; border-radius: 50%;
-            position: absolute; transition: transform 0.5s ease-in-out;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            transition: transform 0.5s ease-in-out;
         }
         .red { background: red; }
         .white { background: white; border: 1px solid black; }
@@ -52,75 +107,115 @@
             transform: translateY(0);
             opacity: 1;
         }
+        #result {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
-    <div class="game-container" style="margin-top: 132px; margin-right:43px ;">
-        <button id="shakeButton" onclick="shakePlate()">Xóc</button>
+    <div class="game-container">
+        <div class="buttons">
+            <button id="coverButton" onclick="coverBowl()">Úp bát</button>
+            <button id="shakeButton" onclick="shakePlate()" disabled>Xóc</button>
+            <button id="openButton" onclick="openBowl()" disabled>Mở bát</button>
+        </div>
+
         <div class="plate" id="plate">
             <div class="bowl close-bowl" id="bowl"></div>
             <div class="coins" id="coins"></div>
         </div>
-        <h2 id="result" style="visibility: hidden;">Kết quả: </h2>
     </div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.11.0/dist/sweetalert2.all.min.js"></script>
     <script>
-        function shakePlate() {
-            const plate = document.getElementById('plate');
+        let gameResult = ''; // Lưu trữ kết quả để hiển thị sau
+
+        function coverBowl() {
             const bowl = document.getElementById('bowl');
-            const result = document.getElementById('result');
             const shakeButton = document.getElementById('shakeButton');
-            
-            result.style.visibility = "hidden";
-            shakeButton.style.display = "none";
-            
+            const openButton = document.getElementById('openButton');
+
+            // Reset trạng thái
+            gameResult = ''; // Reset kết quả
             bowl.classList.remove('open-bowl');
             bowl.classList.add('close-bowl');
+
+            // Kích hoạt nút Xóc, vô hiệu hóa nút Úp bát
+            shakeButton.disabled = false;
+            openButton.disabled = true;
+        }
+
+        function shakePlate() {
+            const plate = document.getElementById('plate');
+            const shakeButton = document.getElementById('shakeButton');
+            const openButton = document.getElementById('openButton');
+
+            // Thực hiện hiệu ứng xóc
             plate.classList.add('shake');
-            
             setTimeout(() => {
                 plate.classList.remove('shake');
                 rollCoins();
-                setTimeout(() => {
-                    bowl.classList.remove('close-bowl');
-                    bowl.classList.add('open-bowl');
-                    shakeButton.style.display = "inline-block";
-                }, 500);
-            }, 1000);
+
+                // Kích hoạt nút Mở bát, vô hiệu hóa nút Xóc
+                shakeButton.disabled = true;
+                openButton.disabled = false;
+            }, 3000);
+        }
+
+        function openBowl() {
+            const bowl = document.getElementById('bowl');
+
+            // Hiển thị kết quả
+            bowl.classList.remove('close-bowl');
+            bowl.classList.add('open-bowl');
+
+            // Hiển thị kết quả với SweetAlert
+            Swal.fire({
+                title: gameResult,
+                showClass: {
+                    popup: `
+                        animate__animated
+                        animate__fadeInUp
+                        animate__faster
+                    `
+                },
+                hideClass: {
+                    popup: `
+                        animate__animated
+                        animate__fadeOutDown
+                        animate__faster
+                    `
+                }
+            });
         }
 
         function rollCoins() {
             const coinsContainer = document.getElementById('coins');
-            const result = document.getElementById('result');
             coinsContainer.innerHTML = '';
+
             let redCount = 0;
             let whiteCount = 0;
-            
+
             for (let i = 0; i < 4; i++) {
                 const coin = document.createElement('div');
                 coin.classList.add('coin');
+
                 const isRed = Math.random() > 0.5;
                 coin.classList.add(isRed ? 'red' : 'white');
                 if (isRed) redCount++; else whiteCount++;
-                
+
                 coin.style.top = `${Math.random() * 60 + 40}px`;
                 coin.style.left = `${Math.random() * 60 + 20}px`;
                 coinsContainer.appendChild(coin);
             }
-            
-            setTimeout(() => {
-                let resultText = '';
-                if ((redCount === 2 && whiteCount === 2) || redCount === 4 || whiteCount === 4) {
-                    resultText = "Kết quả: Chẵn";
-                } else {
-                    resultText = "Kết quả: Lẻ";
-                }
-                result.innerText = resultText;
-                result.style.visibility = "visible";
-            }, 600);
+
+            if ((redCount === 2 && whiteCount === 2) || redCount === 4 || whiteCount === 4) {
+                gameResult = 'Kết quả: Chẵn';
+            } else {
+                gameResult = 'Kết quả: Lẻ';
+            }
         }
     </script>
-
-    
 </body>
 </html>
